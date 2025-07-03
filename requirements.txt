@@ -1,0 +1,35 @@
+# Requirements for the Media-to-Text Converter
+#
+# These versions are selected to be recent while ensuring stability on
+# low-performance, CPU-only hardware.
+
+# --- Core AI & Machine Learning Libraries ---
+# For PyTorch, it is CRITICAL to install the CPU-only version to save space
+# and ensure compatibility on hardware without a dedicated GPU.
+# Use the --index-url flag during installation, for example:
+# pip install torch==2.3.1 --index-url https://download.pytorch.org/whl/cpu
+torch==2.2.2
+
+# faster-whisper is optimized for fast CPU inference.
+faster-whisper==1.1.1
+
+# Transformers library by Hugging Face for translation and summarization.
+transformers==4.53.0
+
+# Required by many transformer models for tokenization.
+sentencepiece==0.2.0
+
+# For securely loading model weights, a dependency for transformers.
+safetensors==0.5.3
+
+# --- Document Processing & Testing ---
+
+# [cite_start]For extracting text from PDF files. [cite: 1]
+pdfplumber==0.11.7
+
+# [cite_start]Framework for testing the application code. [cite: 1]
+pytest==8.4.1
+
+# --- GUI (For Part 2 of Development) ---
+# The UI framework for the macOS GUI application.
+PySide6==6.6.1
