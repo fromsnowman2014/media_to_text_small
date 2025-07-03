@@ -23,15 +23,17 @@ A powerful command-line tool for transcribing, translating, summarizing, and sub
 
 1. Clone the repository:
 ```bash
-git clone https://github.com/fromsnowman2014/media_to_text_summary.git
-cd media_to_text_summary
+git clone https://github.com/fromsnowman2014/media_to_text_small.git
+cd media_to_text_small
 ```
 
 2. Install dependencies:
 ```bash
+# Install from source with all dependencies
+pip install -e .
+
+# Or install dependencies separately
 pip install -r requirements.txt
-# For PDF processing, you may need to install system-level dependencies for pdfplumber
-# pip install "pdfplumber[image]"
 ```
 
 ## Usage
@@ -49,7 +51,7 @@ Due to OpenMP conflicts between PyTorch and faster-whisper, you should use one o
 #### Method 2: Setting the environment variable directly
 
 ```bash
-KMP_DUPLICATE_LIB_OK=TRUE python -m extract_transcript.cli input_file.mp3
+KMP_DUPLICATE_LIB_OK=TRUE python -m media_to_text.cli input_file.mp3
 ```
 
 This will transcribe the audio file and save the result to the `output` directory.
@@ -69,7 +71,7 @@ This will transcribe the audio file and save the result to the `output` director
     --subtitle_format both
 
 # Or with the environment variable
-KMP_DUPLICATE_LIB_OK=TRUE python -m extract_transcript.cli input_file.mp3 \
+KMP_DUPLICATE_LIB_OK=TRUE python -m media_to_text.cli input_file.mp3 \
     --model medium \
     --language en \
     --output_dir my_output \
@@ -84,16 +86,18 @@ KMP_DUPLICATE_LIB_OK=TRUE python -m extract_transcript.cli input_file.mp3 \
 
 | Argument | Description | Default |
 |----------|-------------|---------|
-| `input_file` | Path to audio/video/text/PDF file or directory | Required |
-| `--input_type` | Explicitly specify input type (`audio`, `video`, `transcript`, `pdf`) | Auto-detect from extension |
-| `--model` | Whisper model size (tiny, base, small, medium, large). Not used for text/PDF. | base |
-| `--language` | Language code for transcription/text | Auto-detect |
-| `--output_dir` | Output directory for results | `output/` |
-| `--translate_to` | Target language for translation | None |
-| `--summarize` | Generate a summary of the transcript/text | False |
-| `--summary_length` | Maximum summary length in words | 150 |
-| `--generate_subtitles` | Generate subtitle files (media files only) | False |
-| `--subtitle_format` | Subtitle format (srt, vtt, or both) | srt |
+| `-i`, `--input` | Path to audio/video/text/PDF file or directory | Required |
+| `-r`, `--recursive` | Process files recursively if input is a directory | False |
+| `-m`, `--model` | Whisper model size (tiny, base, small, medium, large) | base |
+| `-l`, `--language` | Source language code (or None for auto-detection) | Auto-detect |
+| `-o`, `--output-dir` | Directory to save output files | `output/` |
+| `-t`, `--translate` | Translate to specified language code | None |
+| `-s`, `--summarize` | Generate a summary of the transcript/text | False |
+| `--subtitles` | Generate subtitle files (media files only) | False |
+| `--subtitle-format` | Subtitle format (srt or vtt) | srt |
+| `--device` | Device to use for inference (cpu or cuda) | cpu |
+| `--debug` | Enable debug logging | False |
+| `--log-file` | Path to log file | None |
 
 ## Directory Processing
 
@@ -104,7 +108,7 @@ Process all supported audio/video files in a directory:
 ./run.sh path/to/media/folder --generate_subtitles
 
 # Or with the environment variable
-KMP_DUPLICATE_LIB_OK=TRUE python -m extract_transcript.cli path/to/media/folder --generate_subtitles
+KMP_DUPLICATE_LIB_OK=TRUE python -m media_to_text.cli path/to/media/folder --generate_subtitles
 ```
 
 ## Architecture
@@ -118,7 +122,7 @@ The codebase follows SOLID design principles with separate modules for each resp
 - **OutputWriter**: Manages file system operations for output
 - **CLI**: Coordinates the workflow and user interaction
 
-All these modules are located in the `extract_transcript` package.
+All these modules are located in the `media_to_text` package.
 
 ## Supported Formats
 
@@ -149,14 +153,14 @@ To address a security vulnerability in `torch.load`, we use the `safetensors` fo
 Run the test suite:
 
 ```bash
-KMP_DUPLICATE_LIB_OK=TRUE pytest -xvs
+KMP_DUPLICATE_LIB_OK=TRUE python -m pytest -xvs
 ```
 
 ### Adding New Features
 
 The modular architecture makes it easy to extend functionality:
 
-1. Add a new module in the `extract_transcript` package
+1. Add a new module in the `media_to_text` package
 2. Update the CLI interface in `cli.py`
 3. Write unit tests in the `tests` directory
 
